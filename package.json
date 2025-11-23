@@ -1,0 +1,19 @@
+{
+  "name": "numberformatter",
+  "version": "0.0.1",
+  "description": "Displays grey commas as thousand separators",
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "devDependencies": {
+    "@types/vscode": "^1.106.1"
+  },
+  "contributes": {}
+}
