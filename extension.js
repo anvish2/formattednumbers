@@ -1,11 +1,12 @@
 const vscode = require('vscode');
 
 function activate(context) {
-    let separatorDecorationType;
-
     let activeEditor = vscode.window.activeTextEditor;
-    let timeout = undefined;
-    let throttleDelay = 300;
+    let timeout;
+    let throttleDelay;
+    let separatorDecorationType;
+    let minLength;
+    let maxLength;
 
     function createDecorationType(style) {
         if (separatorDecorationType) {
@@ -19,7 +20,7 @@ function activate(context) {
                     textDecoration: 'none; font-size: 0.9em; opacity: 0.5;',
                 },
             });
-        } else { // 'subtle' or default
+        } else if (style === 'subtle') {
             separatorDecorationType = vscode.window.createTextEditorDecorationType({
                 before: {
                     contentText: " ̦", // space + Combining Comma Below (&#806;)
@@ -35,7 +36,7 @@ function activate(context) {
         if (!activeEditor) return;
 
         const decorations = [];
-        const regex = /\b(?<!\.)\d{5,500}\b/g;
+        const regex = new RegExp(`\\b(?<!\\.)\\d{${minLength},${maxLength}}\\b`, 'g');
 
         for (const range of activeEditor.visibleRanges) {
             const text = activeEditor.document.getText(range);
@@ -66,8 +67,11 @@ function activate(context) {
     }
 
     function updateConfig() {
-        throttleDelay = vscode.workspace.getConfiguration('numberFormatter').get('throttle', 300);
-        const style = vscode.workspace.getConfiguration('numberFormatter').get('style', 'subtle');
+        const scope = vscode.workspace.getConfiguration('formattedNumbers');
+        throttleDelay = scope.get('throttle', 300);
+        minLength = scope.get('minLength', 5);
+        maxLength = scope.get('maxLength', 500);
+        const style = scope.get('style', 'subtle');
         createDecorationType(style);
     }
 
@@ -85,12 +89,14 @@ function activate(context) {
     }, null, context.subscriptions);
 
     vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration('numberFormatter.throttle') || event.affectsConfiguration('numberFormatter.style')) {
+        if (event.affectsConfiguration('formattedNumbers')) {
             updateConfig();
+            triggerUpdateDecorations();
         }
     }, null, context.subscriptions);
 
     updateConfig();
+
     if (activeEditor) {
         triggerUpdateDecorations();
     }
