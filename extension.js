@@ -1,14 +1,13 @@
 const vscode = require('vscode');
 
 function activate(context) {
-    // Create decoration type for thousand separators
     const separatorDecorationType = vscode.window.createTextEditorDecorationType({
         before: {
-            color: '#808080',
-            contentText: ',',
-            textDecoration: 'none; font-size: 0.9em;'
-        },
-        rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
+            contentText: " ̦", // space + Combining Comma Below (&#806;)
+            height: '0px',
+            width: '0px',
+            margin: '0 3.5px 0 -3.5px',
+        }
     });
 
     let activeEditor = vscode.window.activeTextEditor;
@@ -18,16 +17,12 @@ function activate(context) {
         
         const text = activeEditor.document.getText();
         const decorations = [];
-        
-        // Match numbers with 4+ digits
-        const regex = /\b\d{4,}\b/g;
+        const regex = /\b(?<!\.)\d{5,500}\b/g;
         let match;
         
         while ((match = regex.exec(text)) !== null) {
             const number = match[0];
-            const startPos = activeEditor.document.positionAt(match.index);
             
-            // Calculate positions for comma insertion (every 3 digits from right)
             for (let i = number.length - 3; i > 0; i -= 3) {
                 const pos = activeEditor.document.positionAt(match.index + i);
                 decorations.push({
