@@ -13,14 +13,14 @@ function activate(context) {
             separatorDecorationType.dispose();
         }
 
-        if (style === 'standard') {
+        if (style === 'inline') {
             separatorDecorationType = vscode.window.createTextEditorDecorationType({
                 before: {
                     contentText: ',',
                     textDecoration: 'none; font-size: 0.9em; opacity: 0.5;',
                 },
             });
-        } else if (style === 'subtle') {
+        } else if (style === 'underline') {
             separatorDecorationType = vscode.window.createTextEditorDecorationType({
                 before: {
                     //contentText: " ̦", // space + Combining Comma Below (&#806;)
@@ -76,7 +76,7 @@ function activate(context) {
         throttleDelay = scope.get('throttle', 300);
         minLength = scope.get('minLength', 5);
         maxLength = scope.get('maxLength', 500);
-        const style = scope.get('style', 'subtle');
+        const style = scope.get('style', 'underline');
         createDecorationType(style);
     }
 

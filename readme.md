@@ -1,10 +1,5 @@
-## package extension
+Displays numbers with thousands separators
 
-npm install -g @vscode/vsce
-vsce package
-code --install-extension formattednumbers-0.0.1.vsix
+<img src="readme/screenshot-inline.png" width="170,5">
 
-# todo
-
-detect when visible text part shows number only partially (has offset and starts with a number) and don't decorate it
-
+<img src="readme/screenshot-underline.png" width="179,5">

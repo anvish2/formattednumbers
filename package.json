@@ -23,7 +23,8 @@
   "files": [
     "extension.js",
     "package.json",
-    "LICENSE"
+    "LICENSE",
+    "readme.md"
   ],
   "contributes": {
     "configuration": {
@@ -36,10 +37,10 @@
         },
         "formattedNumbers.style": {
           "type": "string",
-          "default": "subtle",
+          "default": "underline",
           "enum": [
-            "subtle",
-            "standard"
+            "underline",
+            "inline"
           ],
           "description": "The style of the thousand separator.",
           "enumDescriptions": [
