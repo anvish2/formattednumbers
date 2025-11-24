@@ -14,23 +14,26 @@ function activate(context) {
     
     function updateDecorations() {
         if (!activeEditor) return;
-        
-        const text = activeEditor.document.getText();
+
         const decorations = [];
         const regex = /\b(?<!\.)\d{5,500}\b/g;
-        let match;
-        
-        while ((match = regex.exec(text)) !== null) {
-            const number = match[0];
+
+        for (const range of activeEditor.visibleRanges) {
+            const text = activeEditor.document.getText(range);
+            const offset = activeEditor.document.offsetAt(range.start);
+            let match;
             
-            for (let i = number.length - 3; i > 0; i -= 3) {
-                const pos = activeEditor.document.positionAt(match.index + i);
-                decorations.push({
-                    range: new vscode.Range(pos, pos)
-                });
+            while ((match = regex.exec(text)) !== null) {
+                const number = match[0];
+                
+                for (let i = number.length - 3; i > 0; i -= 3) {
+                    const pos = activeEditor.document.positionAt(offset + match.index + i);
+                    decorations.push({
+                        range: new vscode.Range(pos, pos)
+                    });
+                }
             }
         }
-        
         activeEditor.setDecorations(separatorDecorationType, decorations);
     }
 
@@ -43,8 +46,8 @@ function activate(context) {
         if (editor) updateDecorations();
     }, null, context.subscriptions);
 
-    vscode.workspace.onDidChangeTextDocument(event => {
-        if (activeEditor && event.document === activeEditor.document) {
+    vscode.window.onDidChangeTextEditorVisibleRanges(event => {
+        if (activeEditor && event.textEditor === activeEditor) {
             updateDecorations();
         }
     }, null, context.subscriptions);
