@@ -15,5 +15,29 @@
   "devDependencies": {
     "@types/vscode": "^1.106.1"
   },
-  "contributes": {}
+  "contributes": {
+    "configuration": {
+      "title": "Number Formatter",
+      "properties": {
+        "numberFormatter.throttle": {
+          "type": "number",
+          "default": 300,
+          "description": "The delay in milliseconds before updating decorations. Set to 0 for immediate updates."
+        },
+        "numberFormatter.style": {
+          "type": "string",
+          "default": "subtle",
+          "enum": [
+            "subtle",
+            "standard"
+          ],
+          "description": "The style of the thousand separator.",
+          "enumDescriptions": [
+            "A subtle combining comma below the character.",
+            "A standard grey comma."
+          ]
+        }
+      }
+    }
+  }
 }
