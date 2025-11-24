@@ -23,10 +23,15 @@ function activate(context) {
         } else if (style === 'subtle') {
             separatorDecorationType = vscode.window.createTextEditorDecorationType({
                 before: {
-                    contentText: " ̦", // space + Combining Comma Below (&#806;)
+                    //contentText: " ̦", // space + Combining Comma Below (&#806;)
+                    //contentText: " ̣", // space + Combining Dot Below (&#803;)
+                    //contentText: " ̝", // space + Combining Up Tack Below (&#797;)
+                    //contentText: " ̠", // space + Combining Minus Sign Below (&#800;)
+                    contentText: " ̩", // space + Combining Vertical Line Below (&#809;)
                     height: '0px',
                     width: '0px',
-                    margin: '0 3.5px 0 -3.5px',
+                    margin: '0 0.3em 0 -0.3em',
+                    textDecoration: 'none; font-weight: bold;',
                 }
             });
         }
