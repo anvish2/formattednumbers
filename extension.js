@@ -7,6 +7,7 @@ function activate(context) {
     let separatorDecorationType;
     let minLength;
     let maxLength;
+    let formatAfterDecimal;
 
     function createDecorationType(style) {
         if (separatorDecorationType) {
@@ -41,24 +42,39 @@ function activate(context) {
         if (!activeEditor) return;
 
         const decorations = [];
-        const regex = new RegExp(`\\b(?<!\\.)\\d{${minLength},${maxLength}}\\b`, 'g');
+        const regex = new RegExp(`\\b\\d{1,${maxLength}}(?:\\.\\d{1,${maxLength}})?\\b`, 'g');
 
         for (const range of activeEditor.visibleRanges) {
             const text = activeEditor.document.getText(range);
             const offset = activeEditor.document.offsetAt(range.start);
             let match;
 
-            while ((match = regex.exec(text)) !== null) {
+            while ((match = regex.exec(text))) {
                 const number = match[0];
+                const dotIndex = number.indexOf('.');
+                const integerPart = dotIndex !== -1 ? number.substring(0, dotIndex) : number;
+                const fractionalPart = dotIndex !== -1 ? number.substring(dotIndex + 1) : '';
 
-                for (let i = number.length - 3; i > 0; i -= 3) {
-                    const pos = activeEditor.document.positionAt(offset + match.index + i);
-                    decorations.push({
-                        range: new vscode.Range(pos, pos)
-                    });
+                if (integerPart.length >= minLength) {
+                    for (let i = integerPart.length - 3; i > 0; i -= 3) {
+                        const pos = activeEditor.document.positionAt(offset + match.index + i);
+                        decorations.push({
+                            range: new vscode.Range(pos, pos)
+                        });
+                    }
+                }
+
+                if (formatAfterDecimal && fractionalPart.length >= minLength) {
+                    for (let i = 3; i < fractionalPart.length; i += 3) {
+                        const pos = activeEditor.document.positionAt(offset + match.index + dotIndex + 1 + i);
+                        decorations.push({
+                            range: new vscode.Range(pos, pos)
+                        });
+                    }
                 }
             }
         }
+
         activeEditor.setDecorations(separatorDecorationType, decorations);
     }
 
@@ -76,6 +92,7 @@ function activate(context) {
         throttleDelay = scope.get('throttle', 300);
         minLength = scope.get('minLength', 5);
         maxLength = scope.get('maxLength', 500);
+        formatAfterDecimal = scope.get('formatAfterDecimal', false);
         const style = scope.get('style', 'underline');
         createDecorationType(style);
     }
