@@ -1,7 +1,7 @@
 ## package extension
 
 npm install -g @vscode/vsce
-vsce package --allow-missing-repository
+vsce package
 code --install-extension formattednumbers-0.0.1.vsix
 
 # todo

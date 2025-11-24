@@ -1,7 +1,12 @@
 {
   "name": "formattednumbers",
   "version": "0.0.1",
-  "description": "Displays grey commas as thousand separators",
+  "description": "Automatically render thousand separators",
+  "publisher": "anvish",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anvish2/formattednumbers"
+  },
   "main": "./extension.js",
   "engines": {
     "vscode": "^1.74.0"
@@ -17,7 +22,8 @@
   },
   "files": [
     "extension.js",
-    "package.json"
+    "package.json",
+    "LICENSE"
   ],
   "contributes": {
     "configuration": {
@@ -37,14 +43,14 @@
           ],
           "description": "The style of the thousand separator.",
           "enumDescriptions": [
-            "A subtle combining comma below the character.",
-            "A standard grey comma."
+            "A subtle separator below the line, keeping line width intact.",
+            "A standard grey comma, this will make line wider."
           ]
         },
         "formattedNumbers.minLength": {
           "type": "number",
           "default": 5,
-          "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000 and keeping years."
+          "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000, this will keep 4-digit years without separator."
         },
         "formattedNumbers.maxLength": {
           "type": "number",
