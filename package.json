@@ -1,8 +1,9 @@
 {
   "name": "formattednumbers",
   "displayName": "Formatted Numbers",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Automatically render thousands separators",
+  "icon": "resources/icon.png",
   "publisher": "anvish",
   "repository": {
     "type": "git",
@@ -25,7 +26,8 @@
     "extension.js",
     "package.json",
     "LICENSE",
-    "readme.md"
+    "readme.md",
+    "resources/icon.png"
   ],
   "contributes": {
     "configuration": {
