@@ -1,7 +1,7 @@
 {
   "name": "formattednumbers",
   "displayName": "Formatted Numbers",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Automatically render thousands separators",
   "icon": "resources/icon.png",
   "publisher": "anvish",
@@ -41,33 +41,52 @@
             "inline"
           ],
           "description": "The style of the thousands separator.",
+          "enumItemLabels": [
+            "Underline",
+            "Inline"
+          ],
           "enumDescriptions": [
-            "A subtle separator below the line. This keeps line width intact.",
-            "A standard greyed out comma. This makes line longer."
+            "Insert separators under characters, keeping line width.",
+            "Insert separators between characters, making line longer."
           ]
         },
-        "formattedNumbers.formatAfterDecimal": {
+        "formattedNumbers.useSpacing": {
           "order": 2,
           "type": "boolean",
+          "default": true,
+          "description": "Add spacing between number groups."
+        },
+        "formattedNumbers.useCharacter": {
+          "order": 3,
+          "type": "boolean",
           "default": false,
-          "description": "Whether to format digits after the decimal point. E.g., 12,345.678,90."
+          "description": "Add separating character between number groups."
+        },
+        "formattedNumbers.formatAfterDecimal": {
+          "order": 4,
+          "type": "boolean",
+          "default": true,
+          "description": "Format also the digits after the decimal point. E.g.: 12,345.678,90."
         },
         "formattedNumbers.minLength": {
-          "order": 3,
+          "order": 5,
           "type": "number",
           "default": 5,
-          "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000, this will keep 4-digit years without separator."
+          "minimum": 3,
+          "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000."
         },
         "formattedNumbers.maxLength": {
-          "order": 4,
+          "order": 6,
           "type": "number",
           "default": 500,
+          "minimum": 3,
           "description": "The maximum length of a number to be formatted."
         },
         "formattedNumbers.throttle": {
-          "order": 5,
+          "order": 7,
           "type": "number",
           "default": 300,
+          "minimum": 0,
           "description": "The delay in milliseconds before updating decorations. Set to 0 for immediate updates."
         }
       }

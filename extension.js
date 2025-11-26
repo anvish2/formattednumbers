@@ -5,35 +5,100 @@ function activate(context) {
     let timeout;
     let throttleDelay;
     let separatorDecorationType;
+    let spacingDecorationTypes;
     let minLength;
     let maxLength;
     let formatAfterDecimal;
+    let useSpacing;
+    let useCharacter;
+    let style;
+    const groupSize = 3;
+    const opacity = 0.5;
+    const spacingEm = 0.05;
 
-    function createDecorationType(style) {
+    function createDecorationType() {
         if (separatorDecorationType) {
             separatorDecorationType.dispose();
+            separatorDecorationType = undefined;
         }
 
-        if (style === 'inline') {
-            separatorDecorationType = vscode.window.createTextEditorDecorationType({
+        if (spacingDecorationTypes) {
+            for (let type of spacingDecorationTypes) {
+                type.dispose();
+            }
+            spacingDecorationTypes = undefined;
+        }
+
+        if (useSpacing) {
+            spacingDecorationTypes = [];
+            for (let i = 0; i < groupSize; i++) {
+                spacingDecorationTypes[i] = createSpacingDecorationType(i + 1);
+            }
+        }
+
+        if (useCharacter) {
+            if (style === 'inline') {
+                separatorDecorationType = vscode.window.createTextEditorDecorationType({
+                    before: {
+                        contentText: ',',
+                        textDecoration: `none; font-size: 0.9em; opacity: ${opacity};`,
+                    },
+                    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+                });
+            } else if (style === 'underline') {
+                separatorDecorationType = vscode.window.createTextEditorDecorationType({
+                    before: {
+                        contentText: ',',
+                        height: '0',
+                        width: '0',
+                        margin: '0 0.45em 0 -0.45em',
+                        textDecoration: `none; font-size: 0.9em; opacity: ${opacity}; transform: translateY(.2em);`,
+                    },
+                    // before: {
+                    //     contentText: " ̦", // space + Combining Comma Below (&#806;)
+                    //     //contentText: " ̣", // space + Combining Dot Below (&#803;)
+                    //     //contentText: " ̝", // space + Combining Up Tack Below (&#797;)
+                    //     //contentText: " ̠", // space + Combining Minus Sign Below (&#800;)
+                    //     //contentText: " ̩", // space + Combining Vertical Line Below (&#809;)
+                    //     height: '0px',
+                    //     width: '0px',
+                    //     margin: '0 0.3em 0 -0.3em',
+                    //     textDecoration: 'none; font-weight: bold; opacity: 0.5;',
+                    // },
+                    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+                });
+            }
+        }
+    }
+
+    function createSpacingDecorationType(position) {
+        let offset1 = spacingEm * 2; // first character offset
+        let offset2 = spacingEm; // second and third characters offset
+        if (position == 1) {
+            return vscode.window.createTextEditorDecorationType({
                 before: {
-                    contentText: ',',
-                    textDecoration: 'none; font-size: 0.9em; opacity: 0.5;',
+                    contentText: '',
+                    width: `${offset1}em`,
+                    margin: `0 0 0 ${offset1}em`,
                 },
+                after: {
+                    contentText: '',
+                    margin: `0 -${offset1}em 0 0`,
+                },
+                rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
             });
-        } else if (style === 'underline') {
-            separatorDecorationType = vscode.window.createTextEditorDecorationType({
+        } else {
+            return vscode.window.createTextEditorDecorationType({
                 before: {
-                    //contentText: " ̦", // space + Combining Comma Below (&#806;)
-                    //contentText: " ̣", // space + Combining Dot Below (&#803;)
-                    //contentText: " ̝", // space + Combining Up Tack Below (&#797;)
-                    //contentText: " ̠", // space + Combining Minus Sign Below (&#800;)
-                    contentText: " ̩", // space + Combining Vertical Line Below (&#809;)
-                    height: '0px',
-                    width: '0px',
-                    margin: '0 0.3em 0 -0.3em',
-                    textDecoration: 'none; font-weight: bold;',
-                }
+                    contentText: '',
+                    width: `${offset2}em`,
+                    margin: `0 0 0 -${offset2}em`,
+                },
+                after: {
+                    contentText: '',
+                    margin: `0 -${offset2}em 0 0`,
+                },
+                rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
             });
         }
     }
@@ -42,6 +107,8 @@ function activate(context) {
         if (!activeEditor) return;
 
         const decorations = [];
+        const spacingDecorations = [];
+        for (let i = 0; i < groupSize; i++) { spacingDecorations[i] = []; }
         const regex = new RegExp(`\\b\\d{1,${maxLength}}(?:\\.\\d{1,${maxLength}})?\\b`, 'g');
 
         for (const range of activeEditor.visibleRanges) {
@@ -56,26 +123,56 @@ function activate(context) {
                 const fractionalPart = dotIndex !== -1 ? number.substring(dotIndex + 1) : '';
 
                 if (integerPart.length >= minLength) {
-                    for (let i = integerPart.length - 3; i > 0; i -= 3) {
-                        const pos = activeEditor.document.positionAt(offset + match.index + i);
-                        decorations.push({
-                            range: new vscode.Range(pos, pos)
-                        });
+                    if (useSpacing) {
+                        for (let i = integerPart.length - 1; i > 0; i -= 1) {
+                            const reverseIndex = integerPart.length - 1 - i;
+                            const decorationType = reverseIndex % groupSize;
+                            const pos = activeEditor.document.positionAt(offset + match.index + i);
+                            spacingDecorations[2 - decorationType].push({
+                                range: new vscode.Range(pos, pos)
+                            });
+                        }
+                    }
+                    if (useCharacter) {
+                        for (let i = integerPart.length - groupSize; i > 0; i -= groupSize) {
+                            const pos = activeEditor.document.positionAt(offset + match.index + i);
+                            decorations.push({
+                                range: new vscode.Range(pos, pos)
+                            });
+                        }
                     }
                 }
 
                 if (formatAfterDecimal && fractionalPart.length >= minLength) {
-                    for (let i = 3; i < fractionalPart.length; i += 3) {
-                        const pos = activeEditor.document.positionAt(offset + match.index + dotIndex + 1 + i);
-                        decorations.push({
-                            range: new vscode.Range(pos, pos)
-                        });
+                    if (useSpacing) {
+                        for (let i = 0; i < fractionalPart.length; i += 1) {
+                            const decorationType = i % groupSize;
+                            const pos = activeEditor.document.positionAt(offset + match.index + dotIndex + 1 + i);
+                            spacingDecorations[decorationType].push({
+                                range: new vscode.Range(pos, pos)
+                            });
+                        }
+                    }
+                    if (useCharacter) {
+                        for (let i = groupSize; i < fractionalPart.length; i += groupSize) {
+                            const pos = activeEditor.document.positionAt(offset + match.index + dotIndex + 1 + i);
+                            decorations.push({
+                                range: new vscode.Range(pos, pos)
+                            });
+                        }
                     }
                 }
             }
         }
 
-        activeEditor.setDecorations(separatorDecorationType, decorations);
+        if (useSpacing && spacingDecorationTypes) {
+            for (let i = 0; i < groupSize; i++) {
+                activeEditor.setDecorations(spacingDecorationTypes[i], spacingDecorations[i]);
+            }
+        }
+        if (useCharacter && separatorDecorationType) {
+            activeEditor.setDecorations(separatorDecorationType, decorations);
+        }
     }
 
     function triggerUpdateDecorations(throttle = false) {
@@ -83,24 +180,35 @@ function activate(context) {
             clearTimeout(timeout);
             timeout = undefined;
         }
-        const delay = throttle ? throttleDelay : 0;
-        timeout = setTimeout(updateDecorations, delay);
+        if (throttle) {
+            timeout = setTimeout(updateDecorations, throttleDelay);
+        } else {
+            updateDecorations();
+        }
     }
 
     function updateConfig() {
         const scope = vscode.workspace.getConfiguration('formattedNumbers');
-        throttleDelay = scope.get('throttle', 300);
-        minLength = scope.get('minLength', 5);
-        maxLength = scope.get('maxLength', 500);
-        formatAfterDecimal = scope.get('formatAfterDecimal', false);
-        const style = scope.get('style', 'underline');
-        createDecorationType(style);
+        throttleDelay = scope.get('throttle');
+        minLength = scope.get('minLength');
+        maxLength = scope.get('maxLength');
+        formatAfterDecimal = scope.get('formatAfterDecimal');
+        useSpacing = scope.get('useSpacing');
+        useCharacter = scope.get('useCharacter');
+        style = scope.get('style');
+        createDecorationType();
     }
 
     vscode.window.onDidChangeActiveTextEditor(editor => {
         activeEditor = editor;
         if (editor) {
             triggerUpdateDecorations();
+        }
+    }, null, context.subscriptions);
+
+    vscode.workspace.onDidChangeTextDocument(event => {
+        if (activeEditor && event.document === activeEditor.document) {
+            triggerUpdateDecorations(true);
         }
     }, null, context.subscriptions);
 
