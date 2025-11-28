@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     let activeEditor = vscode.window.activeTextEditor;
     let timeout: NodeJS.Timeout | undefined;
     let throttleDelay: number | undefined;
@@ -206,6 +206,35 @@ export function activate(context: vscode.ExtensionContext) {
         createDecorationType();
     }
 
+    async function upgradeConfigSchema(context: vscode.ExtensionContext) {
+        const currentVersion = context.extension.packageJSON.version;
+        const previousVersion = context.globalState.get<string>('version');
+        if (!previousVersion) {
+            await context.globalState.update('version', currentVersion);
+            return;
+        }
+        if (previousVersion !== currentVersion) {
+            const reloadRequired = await runMigrations(previousVersion, currentVersion);
+            if (reloadRequired) {
+                const action = await vscode.window.showInformationMessage(
+                    `Extension updated to v${currentVersion}. Please reload to apply changes.`,
+                    'Reload Window'
+                );
+                if (action === 'Reload Window') {
+                    await vscode.commands.executeCommand('workbench.action.reloadWindow');
+                }
+            }
+            await context.globalState.update('version', currentVersion);
+        }
+    }
+
+    async function runMigrations(previousVersion: string, currentVersion: string): Promise<boolean> {
+        // ConfigurationTarget.Global - user settings
+        // ConfigurationTarget.Workspace - workspace settings
+        // ConfigurationTarget.WorkspaceFolder - folder settings
+        return false;
+    }
+
     vscode.window.onDidChangeActiveTextEditor(editor => {
         activeEditor = editor;
         if (editor) {
@@ -231,6 +260,8 @@ export function activate(context: vscode.ExtensionContext) {
             triggerUpdateDecorations();
         }
     }, null, context.subscriptions);
+
+    await upgradeConfigSchema(context);
 
     updateConfig();
 

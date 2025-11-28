@@ -81,14 +81,14 @@
           "order": 5,
           "type": "integer",
           "default": 5,
-          "minimum": 3,
+          "minimum": 1,
           "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000."
         },
         "formattedNumbers.maxLength": {
           "order": 6,
           "type": "integer",
           "default": 500,
-          "minimum": 3,
+          "minimum": 1,
           "description": "The maximum length of a number to be formatted."
         },
         "formattedNumbers.throttle": {
