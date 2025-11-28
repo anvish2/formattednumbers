@@ -1,18 +1,18 @@
-const vscode = require('vscode');
+import * as vscode from 'vscode';
 
-function activate(context) {
+export function activate(context: vscode.ExtensionContext) {
     let activeEditor = vscode.window.activeTextEditor;
-    let timeout;
-    let throttleDelay;
-    let separatorDecorationType;
-    let spacingDecorationTypes;
-    let minLength;
-    let maxLength;
-    let formatAfterDecimal;
-    let useSpacing;
-    let useCharacter;
-    let opacity;
-    let style;
+    let timeout: NodeJS.Timeout | undefined;
+    let throttleDelay: number | undefined;
+    let separatorDecorationType: vscode.TextEditorDecorationType | undefined;
+    let spacingDecorationTypes: vscode.TextEditorDecorationType[] | undefined;
+    let minLength = 0;
+    let maxLength = 0;
+    let formatAfterDecimal: boolean | undefined;
+    let useSpacing: boolean | undefined;
+    let useCharacter: boolean | undefined;
+    let opacity: number | undefined;
+    let style: 'inline' | 'underline' | undefined;
     const groupSize = 3;
     const spacingEm = 0.05;
 
@@ -77,7 +77,7 @@ function activate(context) {
         }
     }
 
-    function createSpacingDecorationType(position) {
+    function createSpacingDecorationType(position: number) {
         let offset1 = spacingEm * 2; // first character offset
         let offset2 = spacingEm; // second and third characters offset
         if (position == 1) {
@@ -112,8 +112,8 @@ function activate(context) {
     function updateDecorations() {
         if (!activeEditor) return;
 
-        const decorations = [];
-        const spacingDecorations = [];
+        const decorations: vscode.DecorationOptions[] = [];
+        const spacingDecorations: vscode.DecorationOptions[][] = [];
         for (let i = 0; i < groupSize; i++) { spacingDecorations[i] = []; }
         const regex = new RegExp(`\\b\\d{1,${maxLength}}(?:\\.\\d{1,${maxLength}})?\\b`, 'g');
 
@@ -196,8 +196,8 @@ function activate(context) {
     function updateConfig() {
         const scope = vscode.workspace.getConfiguration('formattedNumbers');
         throttleDelay = scope.get('throttle');
-        minLength = scope.get('minLength');
-        maxLength = scope.get('maxLength');
+        minLength = scope.get('minLength') ?? 0;
+        maxLength = scope.get('maxLength') ?? 0;
         formatAfterDecimal = scope.get('formatAfterDecimal');
         useSpacing = scope.get('useSpacing');
         useCharacter = scope.get('useCharacter');
@@ -238,5 +238,3 @@ function activate(context) {
         triggerUpdateDecorations();
     }
 }
-
-module.exports = { activate };

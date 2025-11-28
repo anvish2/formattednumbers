@@ -5,11 +5,12 @@
   "description": "Automatically render thousands separators",
   "icon": "resources/icon.png",
   "publisher": "anvish",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/anvish2/formattednumbers"
   },
-  "main": "./extension.js",
+  "main": "./out/extension.js",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -17,13 +18,21 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onLanguage"
   ],
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint",
+		"watch": "tsc -watch -p ./"
+	},
   "devDependencies": {
-    "@types/vscode": "^1.74.0"
+    "@types/node": "^24.10.1",
+    "@types/vscode": "^1.74.0",
+    "@vscode/vsce": "^3.7.1"
   },
   "files": [
-    "extension.js",
+    "out/extension.js",
     "package.json",
     "LICENSE",
     "readme.md",

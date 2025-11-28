@@ -1,6 +1,8 @@
 # commands
 
-* `npm install -g @vscode/vsce`
+* `npm install --save-dev @vscode/vsce`
+* `npm install --save-dev @types/node`
+* `npm install --save-dev @types/vscode`
 * `vsce package`
 * `code --install-extension formattednumbers-0.0.1.vsix`
 * `mogrify -trim +repage screenshot-*.png`
@@ -11,5 +13,3 @@
 * setting for custom separators (inline, like underscore, and underline, like comma)
 * test on non-retina display
 * update extension schema
-* use ts
-
