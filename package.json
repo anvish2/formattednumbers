@@ -1,7 +1,7 @@
 {
   "name": "formattednumbers",
   "displayName": "Formatted Numbers",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Automatically render thousands separators",
   "icon": "resources/icon.png",
   "publisher": "anvish",
@@ -70,24 +70,32 @@
         },
         "formattedNumbers.minLength": {
           "order": 5,
-          "type": "number",
+          "type": "integer",
           "default": 5,
           "minimum": 3,
           "description": "The minimum length of a number to be formatted. Recommended is 5, i.e. starting with 10,000."
         },
         "formattedNumbers.maxLength": {
           "order": 6,
-          "type": "number",
+          "type": "integer",
           "default": 500,
           "minimum": 3,
           "description": "The maximum length of a number to be formatted."
         },
         "formattedNumbers.throttle": {
           "order": 7,
-          "type": "number",
+          "type": "integer",
           "default": 300,
           "minimum": 0,
           "description": "The delay in milliseconds before updating decorations. Set to 0 for immediate updates."
+        },
+        "formattedNumbers.separatorOpacity": {
+          "order": 8,
+          "type": "number",
+          "default": 0.5,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Opacity of a separator character. 0 is transparent, 1 is fully opaque."
         }
       }
     }

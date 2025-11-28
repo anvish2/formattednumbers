@@ -11,9 +11,9 @@ function activate(context) {
     let formatAfterDecimal;
     let useSpacing;
     let useCharacter;
+    let opacity;
     let style;
     const groupSize = 3;
-    const opacity = 0.5;
     const spacingEm = 0.05;
 
     function createDecorationType() {
@@ -46,27 +46,33 @@ function activate(context) {
                     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
                 });
             } else if (style === 'underline') {
-                separatorDecorationType = vscode.window.createTextEditorDecorationType({
-                    before: {
-                        contentText: ',',
-                        height: '0',
-                        width: '0',
-                        margin: '0 0.45em 0 -0.45em',
-                        textDecoration: `none; font-size: 0.9em; opacity: ${opacity}; transform: translateY(.2em);`,
-                    },
-                    // before: {
-                    //     contentText: " ̦", // space + Combining Comma Below (&#806;)
-                    //     //contentText: " ̣", // space + Combining Dot Below (&#803;)
-                    //     //contentText: " ̝", // space + Combining Up Tack Below (&#797;)
-                    //     //contentText: " ̠", // space + Combining Minus Sign Below (&#800;)
-                    //     //contentText: " ̩", // space + Combining Vertical Line Below (&#809;)
-                    //     height: '0px',
-                    //     width: '0px',
-                    //     margin: '0 0.3em 0 -0.3em',
-                    //     textDecoration: 'none; font-weight: bold; opacity: 0.5;',
-                    // },
-                    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
-                });
+                if (useSpacing) {
+                    separatorDecorationType = vscode.window.createTextEditorDecorationType({
+                        before: {
+                            contentText: ',',
+                            height: '0',
+                            width: '0',
+                            margin: '0 0.45em 0 -0.45em',
+                            textDecoration: `none; font-size: 0.9em; opacity: ${opacity}; transform: translateY(.2em);`,
+                        },
+                        rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+                    });
+                } else {
+                    separatorDecorationType = vscode.window.createTextEditorDecorationType({
+                        before: {
+                            //contentText: " ̦", // space + Combining Comma Below (&#806;)
+                            //contentText: " ̣", // space + Combining Dot Below (&#803;)
+                            //contentText: " ̝", // space + Combining Up Tack Below (&#797;)
+                            //contentText: " ̠", // space + Combining Minus Sign Below (&#800;)
+                            contentText: " ̩", // space + Combining Vertical Line Below (&#809;)
+                            height: '0px',
+                            width: '0px',
+                            margin: '0 0.3em 0 -0.3em',
+                            textDecoration: `none; font-weight: bold; opacity: ${opacity};`,
+                        },
+                        rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+                    });
+                }
             }
         }
     }
@@ -195,6 +201,7 @@ function activate(context) {
         formatAfterDecimal = scope.get('formatAfterDecimal');
         useSpacing = scope.get('useSpacing');
         useCharacter = scope.get('useCharacter');
+        opacity = scope.get('separatorOpacity');
         style = scope.get('style');
         createDecorationType();
     }
