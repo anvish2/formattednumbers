@@ -1,8 +1,9 @@
-# package
+# commands
 
 * `npm install -g @vscode/vsce`
 * `vsce package`
 * `code --install-extension formattednumbers-0.0.1.vsix`
+* `mogrify -trim +repage screenshot-*.png`
 
 # todo
 

@@ -41,7 +41,7 @@ function activate(context) {
                 separatorDecorationType = vscode.window.createTextEditorDecorationType({
                     before: {
                         contentText: ',',
-                        textDecoration: `none; font-size: 0.9em; opacity: ${opacity};`,
+                        textDecoration: `none; opacity: ${opacity};`,
                     },
                     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
                 });
